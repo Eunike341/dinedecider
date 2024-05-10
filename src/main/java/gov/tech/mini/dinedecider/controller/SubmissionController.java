@@ -11,17 +11,17 @@ import java.util.List;
 @RequestMapping("/submissions")
 public class SubmissionController {
 
-    @PostMapping("/{sessionId}")
+    @PostMapping("/{sessionUuid}")
     public void submitRestaurant () {
 
     }
 
-    @GetMapping("/{sessionId}")
+    @GetMapping("/{sessionUuid}")
     public List viewRestaurant () {
         return null;
     }
 
-    @GetMapping("/{sessionId}/decided")
+    @GetMapping("/{sessionUuid}/decided")
     public void view () {
 
     }
