@@ -1,4 +1,4 @@
-package gov.tech.mini.dinedecider.domain.model;
+package gov.tech.mini.dinedecider.repo;
 
 public enum MemberStatus {
     INVITED,

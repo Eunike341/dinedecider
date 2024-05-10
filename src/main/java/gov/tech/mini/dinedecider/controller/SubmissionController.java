@@ -21,7 +21,7 @@ public class SubmissionController {
         return null;
     }
 
-    @GetMapping("/decided")
+    @GetMapping("/{sessionId}/decided")
     public void view () {
 
     }
