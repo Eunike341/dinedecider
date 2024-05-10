@@ -20,17 +20,17 @@ public class SessionController {
         return ResponseEntity.ok(this.sessionService.startSession(session));
     }
 
-    @PatchMapping("/{sessionId}")
+    @PatchMapping("/{sessionUuid}")
     public void endSession () {
 
     }
 
-    @PostMapping("/{sessionId}/invitations")
+    @PostMapping("/{sessionUuid}/invitations")
     public void inviteUser() {
 
     }
 
-    @PostMapping("/{sessionId}/participants")
+    @PostMapping("/{sessionUuid}/participants")
     public void joinSession() {
 
     }

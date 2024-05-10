@@ -46,7 +46,7 @@ public class SessionService {
             inviteeDtos.addAll(newSessionInvitees.stream().map(s -> new UserDto(s.getAttendee())).collect(Collectors.toList()));
         }
 
-        return new SessionDto(new UserDto(adminUser), newSession.getName(), inviteeDtos);
+        return new SessionDto(newSession.getUuid(), new UserDto(adminUser), newSession.getName(), inviteeDtos);
     }
 
     // To reduce DB calls to user table, especially when request contains a lot of invitees, let's load all the users first.
