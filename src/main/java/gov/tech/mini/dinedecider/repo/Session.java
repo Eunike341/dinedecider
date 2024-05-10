@@ -26,6 +26,16 @@ public class Session {
     @Column(name = "end_datetime")
     private LocalDateTime endDatetime;
 
+    public Session() {
+    }
+
+    public Session(UUID uuid, String name, Long adminId, LocalDateTime createDatetime) {
+        this.uuid = uuid;
+        this.name = name;
+        this.adminId = adminId;
+        this.createDatetime = createDatetime;
+    }
+
     public Long getId() {
         return id;
     }

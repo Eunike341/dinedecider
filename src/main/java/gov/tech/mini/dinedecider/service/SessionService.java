@@ -31,22 +31,21 @@ public class SessionService {
     public SessionDto startSession(SessionDto sessionDto) {
         var userUuidMap = loadUsers(sessionDto.admin(), sessionDto.invitees());
 
-        var session = new Session();
         var adminUser = userUuidMap.get(sessionDto.admin().userUuid());
-        session.setAdminId(adminUser.getId());
-        session.setCreateDatetime(LocalDateTime.now());
-        var newSession = this.sessionRepository.save(session);
-        var inviteeDtos = new ArrayList<UserDto>();
+        var session = this.sessionRepository.save(
+                new Session(UUID.randomUUID(), sessionDto.sessionName(), adminUser.getId(), LocalDateTime.now())
+        );
 
+        var inviteesDto = new ArrayList<UserDto>();
         if (sessionDto.invitees()!=null && !sessionDto.invitees().isEmpty()) {
             var sessionInvitees = sessionDto.invitees().stream()
-                    .map(invitee -> new SessionInvitee(userUuidMap.get(invitee.userUuid()), newSession.getId(), MemberStatus.INVITED))
+                    .map(invitee -> new SessionInvitee(userUuidMap.get(invitee.userUuid()), session.getId(), MemberStatus.INVITED))
                     .collect(Collectors.toList());
             var newSessionInvitees = sessionAttendeeRepository.saveAll(sessionInvitees);
-            inviteeDtos.addAll(newSessionInvitees.stream().map(s -> new UserDto(s.getAttendee())).collect(Collectors.toList()));
+            inviteesDto.addAll(newSessionInvitees.stream().map(s -> new UserDto(s.getAttendee())).collect(Collectors.toList()));
         }
 
-        return new SessionDto(newSession.getUuid(), new UserDto(adminUser), newSession.getName(), inviteeDtos);
+        return new SessionDto(session.getUuid(), new UserDto(adminUser), session.getName(), inviteesDto);
     }
 
     // To reduce DB calls to user table, especially when request contains a lot of invitees, let's load all the users first.
