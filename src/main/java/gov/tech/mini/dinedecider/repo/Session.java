@@ -17,8 +17,9 @@ public class Session {
     @Column(name = "sessionName")
     private String name;
 
-    @Column(name = "admin_id", updatable = false)
-    private Long adminId;
+    @ManyToOne
+    @JoinColumn(name = "admin_id", nullable = false)
+    private User admin;
 
     @Column(name = "create_datetime", updatable = false)
     private LocalDateTime createDatetime;
@@ -29,10 +30,10 @@ public class Session {
     public Session() {
     }
 
-    public Session(UUID uuid, String name, Long adminId, LocalDateTime createDatetime) {
+    public Session(UUID uuid, String name, User admin, LocalDateTime createDatetime) {
         this.uuid = uuid;
         this.name = name;
-        this.adminId = adminId;
+        this.admin = admin;
         this.createDatetime = createDatetime;
     }
 
@@ -60,12 +61,12 @@ public class Session {
         this.name = name;
     }
 
-    public Long getAdminId() {
-        return adminId;
+    public User getAdmin() {
+        return admin;
     }
 
-    public void setAdminId(Long adminId) {
-        this.adminId = adminId;
+    public void setAdminId(User admin) {
+        this.admin = admin;
     }
 
     public LocalDateTime getCreateDatetime() {

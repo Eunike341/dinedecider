@@ -3,7 +3,7 @@ package gov.tech.mini.dinedecider.repo;
 import jakarta.persistence.*;
 
 @Entity
-public class SessionInvitee {
+public class SessionUser {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -12,18 +12,19 @@ public class SessionInvitee {
     @JoinColumn(name = "user_id", nullable = false)
     private User attendee;
 
-    @Column(name = "session_id", updatable = false)
-    private Long sessionId;
+    @ManyToOne
+    @JoinColumn(name = "session_id", nullable = false)
+    private Session session;
 
     @Column(name = "status")
     private MemberStatus status;
 
-    public SessionInvitee() {
+    public SessionUser() {
     }
 
-    public SessionInvitee(User attendee, Long sessionId, MemberStatus status) {
+    public SessionUser(User attendee, Session session, MemberStatus status) {
         this.attendee = attendee;
-        this.sessionId = sessionId;
+        this.session = session;
         this.status = status;
     }
 
@@ -43,12 +44,12 @@ public class SessionInvitee {
         this.attendee = attendee;
     }
 
-    public Long getSessionId() {
-        return sessionId;
+    public Session getSession() {
+        return session;
     }
 
-    public void setSessionId(Long sessionId) {
-        this.sessionId = sessionId;
+    public void setSession(Session session) {
+        this.session = session;
     }
 
     public MemberStatus getStatus() {

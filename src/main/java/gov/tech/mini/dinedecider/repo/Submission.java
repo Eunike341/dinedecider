@@ -5,16 +5,20 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-public class SessionSubmission {
+public class Submission {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "session_id", updatable = false)
-    private Long sessionId;
+    @ManyToOne
+    @JoinColumn(name = "session_user_id", nullable = false)
+    private SessionUser sessionUser;
 
-    @Column(name = "placeName", updatable = false)
+    @Column(name = "place_name", updatable = false)
     private String placeName;
+
+    @Column(name = "selected")
+    private boolean selected;
 
     @Column(name = "create_datetime", updatable = false)
     private LocalDateTime createDatetime;
@@ -27,12 +31,12 @@ public class SessionSubmission {
         this.id = id;
     }
 
-    public Long getSessionId() {
-        return sessionId;
+    public SessionUser getSessionUser() {
+        return sessionUser;
     }
 
-    public void setSessionId(Long sessionId) {
-        this.sessionId = sessionId;
+    public void setSessionUser(SessionUser sessionUser) {
+        this.sessionUser = sessionUser;
     }
 
     public String getPlaceName() {
@@ -41,6 +45,14 @@ public class SessionSubmission {
 
     public void setPlaceName(String placeName) {
         this.placeName = placeName;
+    }
+
+    public boolean isSelected() {
+        return selected;
+    }
+
+    public void setSelected(boolean selected) {
+        this.selected = selected;
     }
 
     public LocalDateTime getCreateDatetime() {

@@ -1,29 +1,37 @@
 package gov.tech.mini.dinedecider.controller;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import gov.tech.mini.dinedecider.domain.SubmissionDto;
+import gov.tech.mini.dinedecider.service.SubmissionService;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/submissions")
 public class SubmissionController {
 
-    @PostMapping("/{sessionUuid}")
-    public void submitRestaurant () {
+    private final SubmissionService submissionService;
 
+    public SubmissionController(SubmissionService submissionService) {
+        this.submissionService = submissionService;
+    }
+
+    @PostMapping("/{sessionUuid}")
+    public ResponseEntity<Void> submitPlace (@PathVariable UUID sessionUuid, @RequestBody SubmissionDto submissionDto) {
+        submissionService.submitPlace(sessionUuid, submissionDto);
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/{sessionUuid}")
-    public List viewRestaurant () {
-        return null;
+    public ResponseEntity<List<SubmissionDto>> viewSubmission (@PathVariable UUID sessionUuid) {
+        return ResponseEntity.ok(submissionService.getSubmittedPlaces(sessionUuid));
     }
 
-    @GetMapping("/{sessionUuid}/decided")
-    public void view () {
-
+    @GetMapping("/{sessionUuid}/selected")
+    public ResponseEntity<SubmissionDto> viewSelectedPlace (@PathVariable UUID sessionUuid) {
+        return ResponseEntity.ok(submissionService.getSelectedPlace(sessionUuid));
     }
 
 }

@@ -1,9 +1,14 @@
 package gov.tech.mini.dinedecider.controller;
 
 import gov.tech.mini.dinedecider.domain.SessionDto;
+import gov.tech.mini.dinedecider.domain.SubmissionDto;
+import gov.tech.mini.dinedecider.domain.UserDto;
 import gov.tech.mini.dinedecider.service.SessionService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/sessions")
@@ -21,19 +26,20 @@ public class SessionController {
     }
 
     @PatchMapping("/{sessionUuid}")
-    public void endSession () {
-
+    public ResponseEntity<SubmissionDto> endSession (@PathVariable UUID sessionUuid, @RequestBody UUID adminUuid) {
+        return ResponseEntity.ok(this.sessionService.endSession(sessionUuid, adminUuid));
     }
 
     @PostMapping("/{sessionUuid}/invitations")
-    public void inviteUser() {
-
+    public ResponseEntity<Void> inviteUser(@PathVariable UUID sessionUuid, @RequestBody List<UserDto> invitees) {
+        sessionService.inviteUsers(sessionUuid, invitees);
+        return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/{sessionUuid}/participants")
-    public void joinSession() {
-
+    public ResponseEntity<Void> joinSession(@PathVariable UUID sessionUuid, @RequestBody UUID userUuid) {
+        sessionService.joinSession(sessionUuid, userUuid);
+        return ResponseEntity.noContent().build();
     }
-
 
 }
