@@ -23,6 +23,13 @@ public class Submission {
     @Column(name = "create_datetime", updatable = false)
     private LocalDateTime createDatetime;
 
+    public Submission() {
+    }
+
+    public Submission(String placeName) {
+        this.placeName = placeName;
+    }
+
     public Long getId() {
         return id;
     }

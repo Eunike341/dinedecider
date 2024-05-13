@@ -10,10 +10,12 @@ import java.util.concurrent.ThreadLocalRandom;
 public class RandomPlaceDecider implements PlaceDecider {
     @Override
     public Submission select(List<Submission> submissions) {
+        if (submissions == null || submissions.isEmpty()) {
+            return null;
+        }
         Submission submission = submissions.stream()
                 .skip(ThreadLocalRandom.current().nextInt(submissions.size()))
-                .findFirst()
-                .orElse(null);
+                .findFirst().get();
         return submission;
     }
 }
