@@ -8,5 +8,5 @@ import java.util.UUID;
 
 @Repository
 public interface SessionUserRepository extends JpaRepository<SessionUser, Long> {
-    Optional<SessionUser> findByAttendee_UuidAndSession_Uuid(UUID userUuid, UUID sessionUuid);
+    Optional<SessionUser> findByAttendee_UuidAndSession_UuidAndSession_Status(UUID userUuid, UUID sessionUuid, SessionStatus sessionStatus);
 }

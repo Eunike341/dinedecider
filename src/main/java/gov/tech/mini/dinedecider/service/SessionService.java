@@ -44,7 +44,7 @@ public class SessionService {
 
         var adminUser = userUuidMap.get(sessionDto.admin().userUuid());
         var session = this.sessionRepository.save(
-                new Session(UUID.randomUUID(), sessionDto.sessionName(), adminUser, LocalDateTime.now())
+                new Session(UUID.randomUUID(), sessionDto.sessionName(), SessionStatus.ACTIVE, adminUser, LocalDateTime.now())
         );
 
         var inviteesDto = new ArrayList<UserDto>();
@@ -115,6 +115,7 @@ public class SessionService {
         selectedSubmission.setSelected(true);
         submissionRepository.save(selectedSubmission);
 
+        session.setStatus(SessionStatus.ENDED);
         session.setEndDatetime(LocalDateTime.now());
         sessionRepository.save(session);
         return new SubmissionDto(selectedSubmission.getPlaceName(),
@@ -123,7 +124,7 @@ public class SessionService {
     }
 
     public void joinSession(UUID sessionUuid, UUID userUuid) {
-        var sessionUser = sessionUserRepository.findByAttendee_UuidAndSession_Uuid(userUuid, sessionUuid)
+        var sessionUser = sessionUserRepository.findByAttendee_UuidAndSession_UuidAndSession_Status(userUuid, sessionUuid, SessionStatus.ACTIVE)
                 .orElseThrow(() -> new ApiException("User not found on session", ErrorCode.USER_NOT_FOUND));
         sessionUser.setStatus(MemberStatus.JOINED);
         sessionUserRepository.save(sessionUser);
@@ -131,7 +132,7 @@ public class SessionService {
 
     @Transactional
     public void inviteUsers(UUID sessionUuid, List<UserDto> users) {
-        var session = this.sessionRepository.findByUuid(sessionUuid)
+        var session = this.sessionRepository.findByUuidAndStatus(sessionUuid, SessionStatus.ACTIVE)
                 .orElseThrow(()->new ApiException("Session not found", ErrorCode.SESSION_NOT_FOUND));
 
         var userUuidMap = loadUsers(users);

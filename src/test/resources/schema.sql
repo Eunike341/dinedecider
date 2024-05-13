@@ -8,10 +8,13 @@ CREATE TABLE `user` (
 
 CREATE INDEX idx_uuid ON `user`(uuid);
 
+CREATE TYPE session_status AS ENUM ('ACTIVE', 'ENDED');
+
 CREATE TABLE `session` (
     id SERIAL PRIMARY KEY,
     uuid UUID NOT NULL UNIQUE,
     session_name VARCHAR(255),
+    status session_status NOT NULL,
     admin_id BIGINT NOT NULL,
     create_datetime TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
     end_datetime TIMESTAMP,

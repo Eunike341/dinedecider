@@ -3,6 +3,7 @@ package gov.tech.mini.dinedecider.service;
 import gov.tech.mini.dinedecider.domain.SubmissionDto;
 import gov.tech.mini.dinedecider.domain.exception.ApiException;
 import gov.tech.mini.dinedecider.domain.exception.ErrorCode;
+import gov.tech.mini.dinedecider.repo.SessionStatus;
 import gov.tech.mini.dinedecider.repo.SessionUserRepository;
 import gov.tech.mini.dinedecider.repo.Submission;
 import gov.tech.mini.dinedecider.repo.SubmissionRepository;
@@ -37,7 +38,7 @@ public class SubmissionService {
     }
 
     public void submitPlace (UUID sessionUuid, SubmissionDto submissionDto) {
-        var sessionUser = sessionUserRepository.findByAttendee_UuidAndSession_Uuid(submissionDto.submittedBy().userUuid(), sessionUuid)
+        var sessionUser = sessionUserRepository.findByAttendee_UuidAndSession_UuidAndSession_Status(submissionDto.submittedBy().userUuid(), sessionUuid, SessionStatus.ACTIVE)
                 .orElseThrow(() -> new ApiException("User not found on session", ErrorCode.USER_NOT_FOUND));
         var submission = new Submission();
         submission.setPlaceName(submissionDto.placeName());

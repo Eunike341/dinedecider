@@ -14,8 +14,11 @@ public class Session {
     @Column(name = "uuid")
     private UUID uuid;
 
-    @Column(name = "sessionName")
+    @Column(name = "session_name")
     private String name;
+
+    @Column(name = "status")
+    private SessionStatus status;
 
     @ManyToOne
     @JoinColumn(name = "admin_id", nullable = false)
@@ -30,9 +33,10 @@ public class Session {
     public Session() {
     }
 
-    public Session(UUID uuid, String name, User admin, LocalDateTime createDatetime) {
+    public Session(UUID uuid, String name, SessionStatus status, User admin, LocalDateTime createDatetime) {
         this.uuid = uuid;
         this.name = name;
+        this.status = status;
         this.admin = admin;
         this.createDatetime = createDatetime;
     }
@@ -61,11 +65,19 @@ public class Session {
         this.name = name;
     }
 
+    public SessionStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(SessionStatus status) {
+        this.status = status;
+    }
+
     public User getAdmin() {
         return admin;
     }
 
-    public void setAdminId(User admin) {
+    public void setAdmin(User admin) {
         this.admin = admin;
     }
 
