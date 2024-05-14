@@ -17,6 +17,7 @@ public class Session {
     @Column(name = "session_name")
     private String name;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "status")
     private SessionStatus status;
 

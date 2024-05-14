@@ -10,3 +10,7 @@ spring:
   jpa:
     database: POSTGRESQL
     show-sql: true
+
+logging:
+  level:
+    org.hibernate.orm.jdbc.bind: trace

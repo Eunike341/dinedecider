@@ -17,6 +17,7 @@ public class SessionUser {
     @JoinColumn(name = "session_id", nullable = false)
     private Session session;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "status")
     private MemberStatus status;
 

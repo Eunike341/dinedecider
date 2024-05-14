@@ -25,7 +25,7 @@ public class GlobalExceptionHandler {
                 "An unexpected error occurred",
                 request.getDescription(false)
         );
-        return new ResponseEntity<>(new ErrorDetail(new Date(), ex.getMessage(), request.getDescription(false)), HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>(new ErrorDetail(new Date(), "Please contact administrator", request.getDescription(false)), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
 }
