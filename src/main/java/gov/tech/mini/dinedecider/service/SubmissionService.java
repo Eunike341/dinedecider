@@ -4,6 +4,8 @@ import gov.tech.mini.dinedecider.domain.SubmissionDto;
 import gov.tech.mini.dinedecider.domain.exception.ApiException;
 import gov.tech.mini.dinedecider.domain.exception.ErrorCode;
 import gov.tech.mini.dinedecider.repo.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -13,6 +15,7 @@ import java.util.stream.Collectors;
 
 @Service
 public class SubmissionService {
+    private static final Logger LOG = LoggerFactory.getLogger(SubmissionService.class);
     private final SubmissionRepository submissionRepository;
     private final SessionUserRepository sessionUserRepository;
 
@@ -36,11 +39,13 @@ public class SubmissionService {
     }
 
     public void submitPlace (UUID sessionUuid, SubmissionDto submissionDto) {
+        LOG.debug("Submitting a new place for:", sessionUuid, submissionDto);
         var sessionUser = sessionUserRepository.findByStatusAndAttendee_UuidAndSession_UuidAndSession_Status(
                 MemberStatus.JOINED,
                 submissionDto.submittedBy().userUuid(), sessionUuid, SessionStatus.ACTIVE)
                 .orElseThrow(() -> new ApiException("User not found on session", ErrorCode.INVALID_SUBMISSION));
         var submission = new Submission(sessionUser, submissionDto.placeName(), LocalDateTime.now());
         submissionRepository.save(submission);
+        LOG.debug("New place has been submitted for session:", submission);
     }
 }

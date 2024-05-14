@@ -4,13 +4,13 @@ import java.util.Date;
 
 public class ErrorDetail {
     private Date timestamp;
+    private String errCode;
     private String message;
-    private String details;
 
-    public ErrorDetail(Date timestamp, String message, String details) {
+    public ErrorDetail(Date timestamp, String errCode, String message) {
         this.timestamp = timestamp;
+        this.errCode = errCode;
         this.message = message;
-        this.details = details;
     }
 
     public Date getTimestamp() {
@@ -21,20 +21,20 @@ public class ErrorDetail {
         this.timestamp = timestamp;
     }
 
+    public String getErrCode() {
+        return errCode;
+    }
+
+    public void setErrCode(String errCode) {
+        this.errCode = errCode;
+    }
+
     public String getMessage() {
         return message;
     }
 
     public void setMessage(String message) {
         this.message = message;
-    }
-
-    public String getDetails() {
-        return details;
-    }
-
-    public void setDetails(String details) {
-        this.details = details;
     }
 }
 

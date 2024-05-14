@@ -6,15 +6,10 @@ import gov.tech.mini.dinedecider.domain.SubmissionDto;
 import gov.tech.mini.dinedecider.domain.UserDto;
 import gov.tech.mini.dinedecider.domain.exception.ApiException;
 import gov.tech.mini.dinedecider.domain.exception.ErrorCode;
-import gov.tech.mini.dinedecider.repo.Session;
-import gov.tech.mini.dinedecider.repo.SessionStatus;
 import gov.tech.mini.dinedecider.repo.User;
 import gov.tech.mini.dinedecider.service.SessionService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -85,7 +80,7 @@ public class SessionControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(new UserDto(adminUser))))
                 .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.message").value("Session not found"));
+                .andExpect(jsonPath("$.errCode").value(ErrorCode.SESSION_NOT_FOUND.name()));
     }
 
     @Test
@@ -111,7 +106,7 @@ public class SessionControllerTest {
     }
 
     @Test
-    public void testJoinSession_Success() throws Exception {
+    public void testJoinSession() throws Exception {
         mockMvc.perform(patch("/sessions/{sessionUuid}/participants/{userUuid}", sessionUuid, userUuid)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNoContent());

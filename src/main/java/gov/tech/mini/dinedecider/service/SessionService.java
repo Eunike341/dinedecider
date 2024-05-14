@@ -7,6 +7,8 @@ import gov.tech.mini.dinedecider.domain.exception.ApiException;
 import gov.tech.mini.dinedecider.domain.exception.ErrorCode;
 import gov.tech.mini.dinedecider.repo.*;
 import gov.tech.mini.dinedecider.service.decider.PlaceDecider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +23,7 @@ import java.util.stream.Stream;
 
 @Service
 public class SessionService {
+    private static final Logger LOG = LoggerFactory.getLogger(SessionService.class);
     private final SessionRepository sessionRepository;
     private final UserRepository userRepository;
     private final SessionUserRepository sessionUserRepository;
@@ -46,6 +49,7 @@ public class SessionService {
         var session = this.sessionRepository.save(
                 new Session(UUID.randomUUID(), sessionDto.sessionName(), SessionStatus.ACTIVE, adminUser, LocalDateTime.now())
         );
+        LOG.debug("New session started:", session);
         sessionUserRepository.save(new SessionUser(adminUser, session, MemberStatus.JOINED));
 
         var inviteesDto = new ArrayList<UserDto>();
@@ -55,6 +59,7 @@ public class SessionService {
                     .collect(Collectors.toList());
             var newSessionInvitees = sessionUserRepository.saveAll(sessionInvitees);
             inviteesDto.addAll(newSessionInvitees.stream().map(s -> new UserDto(s.getAttendee())).collect(Collectors.toList()));
+            LOG.debug("Invitees added for session:", session);
         }
 
         return new SessionDto(session.getUuid(), new UserDto(adminUser), session.getName(), inviteesDto);
@@ -90,6 +95,7 @@ public class SessionService {
                     .map(dto -> new User(dto.userUuid(), dto.name(), LocalDateTime.now()))
                     .collect(Collectors.toList()));
             userUuidMap.putAll(newUsers.stream().collect(Collectors.toMap(User::getUuid, Function.identity())));
+            LOG.debug("Added new users:", newUsers);
         }
     }
 
@@ -109,16 +115,18 @@ public class SessionService {
         }
 
         var submissions = submissionRepository.findBySessionUser_Session_Uuid(sessionUuid);
-        if (submissions.isEmpty()) {
+        if (submissions.isEmpty() || submissions.get().isEmpty()) {
             throw new ApiException("There is no place submitted yet", ErrorCode.NO_AVAILABLE_SELECTION);
         }
         var selectedSubmission = placeDecider.select(submissions.get());
         selectedSubmission.setSelected(true);
         submissionRepository.save(selectedSubmission);
+        LOG.debug("Selected submission:", selectedSubmission);
 
         session.setStatus(SessionStatus.ENDED);
         session.setEndDatetime(LocalDateTime.now());
         sessionRepository.save(session);
+        LOG.debug("Session has ended:", session);
         return new SubmissionDto(selectedSubmission.getPlaceName(),
                 new UserDto(selectedSubmission.getSessionUser().getAttendee()),
                 selectedSubmission.isSelected());
@@ -130,6 +138,7 @@ public class SessionService {
                 .orElseThrow(() -> new ApiException("Invalid attempt to join", ErrorCode.INVALID_JOIN_ATTEMPT));
         sessionUser.setStatus(MemberStatus.JOINED);
         sessionUserRepository.save(sessionUser);
+        LOG.debug("User joined a session:", sessionUser);
     }
 
     @Transactional
@@ -143,5 +152,6 @@ public class SessionService {
                 .map(invitee -> new SessionUser(userUuidMap.get(invitee.userUuid()), session, MemberStatus.INVITED))
                 .collect(Collectors.toList());
         sessionUserRepository.saveAll(sessionInvitees);
+        LOG.debug("More users invited to session:", sessionInvitees);
     }
 }

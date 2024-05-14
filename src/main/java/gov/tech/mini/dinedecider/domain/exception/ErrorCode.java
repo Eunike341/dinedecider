@@ -7,7 +7,9 @@ public enum ErrorCode {
     SESSION_ENDED(410),
     NO_AVAILABLE_SELECTION(422),
     INVALID_JOIN_ATTEMPT(400),
-    INVALID_SUBMISSION(400);
+    INVALID_SUBMISSION(400),
+    INVALID_INPUT(400),
+    SYSTEM_EXCEPTION(500);
 
     private final int statusCode;
 
