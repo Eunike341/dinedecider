@@ -31,3 +31,6 @@ build-local/
 
 ### VS Code ###
 .vscode/
+
+### Maven build for Docker ###
+docker/*.jar

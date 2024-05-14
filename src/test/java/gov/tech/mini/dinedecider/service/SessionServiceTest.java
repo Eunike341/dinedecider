@@ -152,7 +152,7 @@ public class SessionServiceTest {
                 .thenReturn(Optional.empty());
 
         var thrown = assertThrows(ApiException.class, () -> sessionService.joinSession(sessionUuid, userUuid));
-        assertEquals(ErrorCode.USER_NOT_FOUND, thrown.getErrorCode());
+        assertEquals(ErrorCode.INVALID_JOIN_ATTEMPT, thrown.getErrorCode());
     }
 
     @Test

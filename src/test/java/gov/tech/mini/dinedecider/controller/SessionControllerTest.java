@@ -16,11 +16,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDateTime;
@@ -36,18 +34,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
-@SpringBootTest
-@ActiveProfiles("test")
-@AutoConfigureMockMvc
+@WebMvcTest(SessionController.class)
 public class SessionControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @Mock
+    @MockBean
     private SessionService sessionService;
-
-    @InjectMocks
-    private SessionController sessionController;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -61,7 +54,6 @@ public class SessionControllerTest {
 
     @BeforeEach
     public void setup() {
-        MockitoAnnotations.initMocks(this);
 
         adminUuid = UUID.randomUUID();
         userUuid = UUID.randomUUID();
@@ -81,7 +73,7 @@ public class SessionControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(sessionDto)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.uuid").exists());
+                .andExpect(jsonPath("$.sessionName").value(sessionDto.sessionName()));
     }
 
     @Test

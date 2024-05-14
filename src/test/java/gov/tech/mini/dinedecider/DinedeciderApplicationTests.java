@@ -19,13 +19,6 @@ class DinedeciderApplicationTests {
 
 	@Test
 	void contextLoads() {
-		synchronized (this) {
-			try {
-				this.wait();
-			} catch (InterruptedException e) {
-				Thread.currentThread().interrupt();
-			}
-		}
 		Assertions.assertNotNull(sessionController);
 		Assertions.assertNotNull(submissionController);
 	}
