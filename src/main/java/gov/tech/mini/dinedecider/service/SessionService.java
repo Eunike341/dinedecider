@@ -46,6 +46,7 @@ public class SessionService {
         var session = this.sessionRepository.save(
                 new Session(UUID.randomUUID(), sessionDto.sessionName(), SessionStatus.ACTIVE, adminUser, LocalDateTime.now())
         );
+        sessionUserRepository.save(new SessionUser(adminUser, session, MemberStatus.JOINED));
 
         var inviteesDto = new ArrayList<UserDto>();
         if (sessionDto.invitees()!=null && !sessionDto.invitees().isEmpty()) {
@@ -124,7 +125,8 @@ public class SessionService {
     }
 
     public void joinSession(UUID sessionUuid, UUID userUuid) {
-        var sessionUser = sessionUserRepository.findByAttendee_UuidAndSession_UuidAndSession_Status(userUuid, sessionUuid, SessionStatus.ACTIVE)
+        var sessionUser = sessionUserRepository.findByStatusAndAttendee_UuidAndSession_UuidAndSession_Status(
+                MemberStatus.INVITED, userUuid, sessionUuid, SessionStatus.ACTIVE)
                 .orElseThrow(() -> new ApiException("Invalid attempt to join", ErrorCode.INVALID_JOIN_ATTEMPT));
         sessionUser.setStatus(MemberStatus.JOINED);
         sessionUserRepository.save(sessionUser);

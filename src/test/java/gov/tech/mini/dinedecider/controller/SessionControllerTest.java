@@ -83,7 +83,7 @@ public class SessionControllerTest {
 
         mockMvc.perform(patch("/sessions/{sessionUuid}", sessionUuid)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(adminUuid)))
+                        .content(objectMapper.writeValueAsString(new UserDto(adminUser))))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.message").value("Session not found"));
     }
@@ -95,7 +95,7 @@ public class SessionControllerTest {
 
         mockMvc.perform(patch("/sessions/{sessionUuid}", sessionUuid)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(adminUuid)))
+                        .content(objectMapper.writeValueAsString(new UserDto(adminUser))))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.selected").exists());
     }
@@ -112,9 +112,8 @@ public class SessionControllerTest {
 
     @Test
     public void testJoinSession_Success() throws Exception {
-        mockMvc.perform(post("/sessions/{sessionUuid}/participants", sessionUuid)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(userUuid)))
+        mockMvc.perform(patch("/sessions/{sessionUuid}/participants/{userUuid}", sessionUuid, userUuid)
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNoContent());
     }
 }

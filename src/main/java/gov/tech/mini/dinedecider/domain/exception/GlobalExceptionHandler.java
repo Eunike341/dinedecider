@@ -20,11 +20,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<?> handleGlobalException(Exception ex, WebRequest request) {
-        ErrorDetail errorDetails = new ErrorDetail(
-                new Date(),
-                "An unexpected error occurred",
-                request.getDescription(false)
-        );
+        ex.printStackTrace();
         return new ResponseEntity<>(new ErrorDetail(new Date(), "Please contact administrator", request.getDescription(false)), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 

@@ -26,8 +26,8 @@ public class SessionController {
     }
 
     @PatchMapping("/{sessionUuid}")
-    public ResponseEntity<SubmissionDto> endSession (@PathVariable UUID sessionUuid, @RequestBody UUID adminUuid) {
-        return ResponseEntity.ok(this.sessionService.endSession(sessionUuid, adminUuid));
+    public ResponseEntity<SubmissionDto> endSession (@PathVariable UUID sessionUuid, @RequestBody UserDto adminDto) {
+        return ResponseEntity.ok(this.sessionService.endSession(sessionUuid, adminDto.userUuid()));
     }
 
     @PostMapping("/{sessionUuid}/invitations")
@@ -36,8 +36,8 @@ public class SessionController {
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/{sessionUuid}/participants")
-    public ResponseEntity<Void> joinSession(@PathVariable UUID sessionUuid, @RequestBody UUID userUuid) {
+    @PatchMapping("/{sessionUuid}/participants/{userUuid}")
+    public ResponseEntity<Void> joinSession(@PathVariable UUID sessionUuid, @PathVariable UUID userUuid) {
         sessionService.joinSession(sessionUuid, userUuid);
         return ResponseEntity.noContent().build();
     }

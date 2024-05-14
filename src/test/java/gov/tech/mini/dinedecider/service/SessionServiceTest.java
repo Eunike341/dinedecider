@@ -148,7 +148,7 @@ public class SessionServiceTest {
     @Test
     public void testJoinInvalidUserSession() {
         when(sessionUserRepository
-                .findByAttendee_UuidAndSession_UuidAndSession_Status(userUuid, sessionUuid, SessionStatus.ACTIVE))
+                .findByStatusAndAttendee_UuidAndSession_UuidAndSession_Status(MemberStatus.INVITED, userUuid, sessionUuid, SessionStatus.ACTIVE))
                 .thenReturn(Optional.empty());
 
         var thrown = assertThrows(ApiException.class, () -> sessionService.joinSession(sessionUuid, userUuid));
@@ -160,7 +160,7 @@ public class SessionServiceTest {
         var sessionUser = new SessionUser(user, session, MemberStatus.INVITED);
 
         when(sessionUserRepository
-                .findByAttendee_UuidAndSession_UuidAndSession_Status(userUuid, sessionUuid, SessionStatus.ACTIVE))
+                .findByStatusAndAttendee_UuidAndSession_UuidAndSession_Status(MemberStatus.INVITED, userUuid, sessionUuid, SessionStatus.ACTIVE))
                 .thenReturn(Optional.of(sessionUser));
 
         sessionService.joinSession(sessionUuid, userUuid);

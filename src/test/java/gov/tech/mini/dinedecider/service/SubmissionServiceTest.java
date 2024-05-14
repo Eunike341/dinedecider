@@ -77,7 +77,7 @@ public class SubmissionServiceTest {
 
     @Test
     public void testSubmitPlaceInvalidSession () {
-        when(sessionUserRepository.findByAttendee_UuidAndSession_UuidAndSession_Status(user.getUuid(), sessionUuid, SessionStatus.ACTIVE))
+        when(sessionUserRepository.findByStatusAndAttendee_UuidAndSession_UuidAndSession_Status(MemberStatus.JOINED, user.getUuid(), sessionUuid, SessionStatus.ACTIVE))
                 .thenReturn(Optional.empty());
         var thrown = assertThrows(ApiException.class, () -> submissionService.submitPlace(sessionUuid, new SubmissionDto(submission)));
         assertEquals(ErrorCode.INVALID_SUBMISSION, thrown.getErrorCode());
@@ -85,7 +85,7 @@ public class SubmissionServiceTest {
 
     @Test
     public void testSubmitPlace () {
-        when(sessionUserRepository.findByAttendee_UuidAndSession_UuidAndSession_Status(user.getUuid(), sessionUuid, SessionStatus.ACTIVE))
+        when(sessionUserRepository.findByStatusAndAttendee_UuidAndSession_UuidAndSession_Status(MemberStatus.JOINED, user.getUuid(), sessionUuid, SessionStatus.ACTIVE))
                 .thenReturn(Optional.of(submission.getSessionUser()));
         when(submissionRepository.save(any(Submission.class))).thenAnswer(invocation -> invocation.getArgument(0));
 

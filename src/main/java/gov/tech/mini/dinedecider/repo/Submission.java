@@ -26,9 +26,10 @@ public class Submission {
     public Submission() {
     }
 
-    public Submission(SessionUser sessionUser, String placeName) {
+    public Submission(SessionUser sessionUser, String placeName, LocalDateTime createDatetime) {
         this.sessionUser = sessionUser;
         this.placeName = placeName;
+        this.createDatetime = createDatetime;
     }
 
     public Submission(String placeName) {
