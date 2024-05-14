@@ -125,7 +125,7 @@ public class SessionService {
 
     public void joinSession(UUID sessionUuid, UUID userUuid) {
         var sessionUser = sessionUserRepository.findByAttendee_UuidAndSession_UuidAndSession_Status(userUuid, sessionUuid, SessionStatus.ACTIVE)
-                .orElseThrow(() -> new ApiException("User not found on session", ErrorCode.USER_NOT_FOUND));
+                .orElseThrow(() -> new ApiException("Invalid attempt to join", ErrorCode.INVALID_JOIN_ATTEMPT));
         sessionUser.setStatus(MemberStatus.JOINED);
         sessionUserRepository.save(sessionUser);
     }

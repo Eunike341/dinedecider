@@ -3,6 +3,7 @@ package gov.tech.mini.dinedecider.repo;
 import jakarta.persistence.*;
 
 @Entity
+@Table(name = "sessionuser")
 public class SessionUser {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

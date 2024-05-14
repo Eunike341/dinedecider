@@ -1,4 +1,4 @@
-CREATE TABLE `user` (
+CREATE TABLE `USER` (
     id SERIAL PRIMARY KEY,
     uuid UUID NOT NULL UNIQUE,
     name VARCHAR(255),
@@ -6,11 +6,11 @@ CREATE TABLE `user` (
     update_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
-CREATE INDEX idx_uuid ON `user`(uuid);
+CREATE INDEX idx_uuid ON `USER`(uuid);
 
 CREATE TYPE session_status AS ENUM ('ACTIVE', 'ENDED');
 
-CREATE TABLE `session` (
+CREATE TABLE `SESSION` (
     id SERIAL PRIMARY KEY,
     uuid UUID NOT NULL UNIQUE,
     session_name VARCHAR(255),
@@ -25,7 +25,7 @@ CREATE INDEX idx_session_uuid ON `session`(uuid);
 
 CREATE TYPE member_status AS ENUM ('INVITED', 'JOINED');
 
-CREATE TABLE sessionuser (
+CREATE TABLE SESSIONUSER (
     id SERIAL PRIMARY KEY,
     user_id BIGINT NOT NULL,
     session_id BIGINT NOT NULL,
@@ -34,7 +34,7 @@ CREATE TABLE sessionuser (
     FOREIGN KEY (session_id) REFERENCES `session`(id)
 );
 
-CREATE TABLE submission (
+CREATE TABLE SUBMISSION (
     id SERIAL PRIMARY KEY,
     session_user_id BIGINT NOT NULL,
     place_name VARCHAR(255) NOT NULL,

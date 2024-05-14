@@ -6,6 +6,7 @@ public enum ErrorCode {
     USER_NOT_ADMIN(403),
     SESSION_ENDED(410),
     NO_AVAILABLE_SELECTION(422),
+    INVALID_JOIN_ATTEMPT(400),
     INVALID_SUBMISSION(400);
 
     private final int statusCode;
