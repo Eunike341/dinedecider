@@ -26,6 +26,11 @@ public class Submission {
     public Submission() {
     }
 
+    public Submission(SessionUser sessionUser, String placeName) {
+        this.sessionUser = sessionUser;
+        this.placeName = placeName;
+    }
+
     public Submission(String placeName) {
         this.placeName = placeName;
     }

@@ -38,11 +38,10 @@ public class SubmissionService {
     }
 
     public void submitPlace (UUID sessionUuid, SubmissionDto submissionDto) {
-        var sessionUser = sessionUserRepository.findByAttendee_UuidAndSession_UuidAndSession_Status(submissionDto.submittedBy().userUuid(), sessionUuid, SessionStatus.ACTIVE)
-                .orElseThrow(() -> new ApiException("User not found on session", ErrorCode.USER_NOT_FOUND));
-        var submission = new Submission();
-        submission.setPlaceName(submissionDto.placeName());
-        submission.setSessionUser(sessionUser);
+        var sessionUser = sessionUserRepository.findByAttendee_UuidAndSession_UuidAndSession_Status(
+                submissionDto.submittedBy().userUuid(), sessionUuid, SessionStatus.ACTIVE)
+                .orElseThrow(() -> new ApiException("User not found on session", ErrorCode.INVALID_SUBMISSION));
+        var submission = new Submission(sessionUser, submissionDto.placeName());
         submissionRepository.save(submission);
     }
 }
