@@ -100,7 +100,7 @@ The project makes use of PostgreSql DB that is run in a docker container.
 
 ## Useful PostgreSql commands
 
-Please not that PostgreSql container needs to be up and the commands need to be run from the container.
+Please note that PostgreSql container needs to be up and the commands need to be run from the container.
 
 ### Connect to PostgreSQL
 ```console
