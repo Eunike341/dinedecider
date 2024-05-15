@@ -75,4 +75,15 @@ public class Submission {
     public void setCreateDatetime(LocalDateTime createDatetime) {
         this.createDatetime = createDatetime;
     }
+
+    @Override
+    public String toString() {
+        return "Submission{" +
+                "id=" + id +
+                ", sessionUser=" + sessionUser +
+                ", placeName='" + placeName + '\'' +
+                ", selected=" + selected +
+                ", createDatetime=" + createDatetime +
+                '}';
+    }
 }

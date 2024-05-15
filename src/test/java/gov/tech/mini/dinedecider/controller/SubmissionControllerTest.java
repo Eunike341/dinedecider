@@ -12,6 +12,7 @@ import java.util.UUID;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.tech.mini.dinedecider.domain.SubmissionDto;
+import gov.tech.mini.dinedecider.domain.SubmissionRequestDto;
 import gov.tech.mini.dinedecider.domain.UserDto;
 import gov.tech.mini.dinedecider.domain.exception.ApiException;
 import gov.tech.mini.dinedecider.domain.exception.ErrorCode;
@@ -36,13 +37,15 @@ public class SubmissionControllerTest {
     private ObjectMapper objectMapper;
 
     private UUID sessionUuid;
+    private UUID userUuid;
     private SubmissionDto submissionDto;
     private List<SubmissionDto> submissionDtoList;
 
     @BeforeEach
     void setUp() {
         sessionUuid = UUID.randomUUID();
-        submissionDto = new SubmissionDto("Place 1", new UserDto(UUID.randomUUID(), "User"), true);
+        userUuid = UUID.randomUUID();
+        submissionDto = new SubmissionDto("Place 1", new UserDto(userUuid, "User"), true);
         submissionDtoList = Arrays.asList(submissionDto);
     }
 
@@ -57,7 +60,7 @@ public class SubmissionControllerTest {
     @Test
     public void testSubmitPlaceInvalid() throws Exception {
         doThrow(new ApiException("User not found on session", ErrorCode.INVALID_SUBMISSION))
-                .when(submissionService).submitPlace(eq(sessionUuid), any(SubmissionDto.class));
+                .when(submissionService).submitPlace(eq(sessionUuid), any(SubmissionRequestDto.class));
 
 
         mockMvc.perform(post("/submissions/" + sessionUuid)
@@ -69,7 +72,7 @@ public class SubmissionControllerTest {
 
     @Test
     void testSubmitPlace() throws Exception {
-        doNothing().when(submissionService).submitPlace(eq(sessionUuid), any(SubmissionDto.class));
+        doNothing().when(submissionService).submitPlace(eq(sessionUuid), any(SubmissionRequestDto.class));
 
         mockMvc.perform(post("/submissions/" + sessionUuid)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -79,9 +82,10 @@ public class SubmissionControllerTest {
 
     @Test
     void testViewSubmissionNoValue() throws Exception {
-        when(submissionService.getSubmittedPlaces(eq(sessionUuid))).thenReturn(List.of());
+        when(submissionService.getSubmittedPlaces(userUuid, userUuid)).thenReturn(List.of());
 
-        mockMvc.perform(get("/submissions/" + sessionUuid))
+        mockMvc.perform(get("/submissions/" + sessionUuid)
+                        .param("userUuid", userUuid.toString()))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(content().json("[]"));
@@ -89,9 +93,10 @@ public class SubmissionControllerTest {
 
     @Test
     void testViewSubmission() throws Exception {
-        when(submissionService.getSubmittedPlaces(eq(sessionUuid))).thenReturn(submissionDtoList);
+        when(submissionService.getSubmittedPlaces(sessionUuid, userUuid)).thenReturn(submissionDtoList);
 
-        mockMvc.perform(get("/submissions/" + sessionUuid))
+        mockMvc.perform(get("/submissions/" + sessionUuid)
+                        .param("userUuid", userUuid.toString()))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(content().json("[{\"placeName\": \"Place 1\"}]"));
@@ -99,20 +104,22 @@ public class SubmissionControllerTest {
 
     @Test
     void testViewSelectedPlaceNoValue() throws Exception {
-        when(submissionService.getSelectedPlace(eq(sessionUuid))).thenReturn(null);
+        when(submissionService.getSelectedPlace(sessionUuid, userUuid)).thenReturn(null);
 
-        mockMvc.perform(get("/submissions/" + sessionUuid + "/selected"))
+        mockMvc.perform(get("/submissions/" + sessionUuid + "/selected")
+                        .param("userUuid", userUuid.toString()))
                 .andExpect(status().isOk())
                 .andExpect(content().string(""));
     }
 
     @Test
     void testViewSelectedPlace() throws Exception {
-        when(submissionService.getSelectedPlace(eq(sessionUuid))).thenReturn(submissionDto);
+        when(submissionService.getSelectedPlace(sessionUuid, userUuid)).thenReturn(submissionDto);
 
-        mockMvc.perform(get("/submissions/" + sessionUuid + "/selected"))
+        mockMvc.perform(get("/submissions/" + sessionUuid + "/selected")
+                        .param("userUuid", userUuid.toString()))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(content().json("{\"placeName\": \"Place 1\"}"));  // Replace with actual JSON body
+                .andExpect(content().json("{\"placeName\": \"Place 1\"}"));
     }
 }

@@ -61,4 +61,14 @@ public class SessionUser {
     public void setStatus(MemberStatus status) {
         this.status = status;
     }
+
+    @Override
+    public String toString() {
+        return "SessionUser{" +
+                "id=" + id +
+                ", attendee=" + attendee +
+                ", session=" + session +
+                ", status=" + status +
+                '}';
+    }
 }

@@ -10,4 +10,7 @@ import java.util.UUID;
 public interface SessionUserRepository extends JpaRepository<SessionUser, Long> {
     Optional<SessionUser> findByStatusAndAttendee_UuidAndSession_UuidAndSession_Status
             (MemberStatus status, UUID userUuid, UUID sessionUuid, SessionStatus sessionStatus);
+
+    Optional<SessionUser> findByStatusAndAttendee_UuidAndSession_Uuid
+            (MemberStatus status, UUID userUuid, UUID sessionUuid);
 }

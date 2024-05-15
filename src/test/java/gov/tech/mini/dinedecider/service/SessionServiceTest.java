@@ -1,6 +1,6 @@
 package gov.tech.mini.dinedecider.service;
 
-import gov.tech.mini.dinedecider.domain.SessionDto;
+import gov.tech.mini.dinedecider.domain.SessionStartRequestDto;
 import gov.tech.mini.dinedecider.domain.SubmissionDto;
 import gov.tech.mini.dinedecider.domain.UserDto;
 import gov.tech.mini.dinedecider.domain.exception.ApiException;
@@ -60,7 +60,7 @@ public class SessionServiceTest {
 
     @Test
     public void testStartSessionWithoutInvitee() {
-        var sessionDto = new SessionDto(null, new UserDto(adminUser), "Test Session", new ArrayList<>());
+        var sessionDto = new SessionStartRequestDto(new UserDto(adminUser), "Test Session", new ArrayList<>());
 
         when(userRepository.findByUuidIn(any())).thenReturn(Arrays.asList(adminUser));
         when(sessionRepository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
@@ -75,7 +75,7 @@ public class SessionServiceTest {
 
     @Test
     public void testStartSessionWithInvitee() {
-        var sessionDto = new SessionDto(null, new UserDto(adminUser), "Test Session",
+        var sessionDto = new SessionStartRequestDto(new UserDto(adminUser), "Test Session",
                 List.of(new UserDto(user)));
 
         when(userRepository.findByUuidIn(any())).thenReturn(Arrays.asList(adminUser));

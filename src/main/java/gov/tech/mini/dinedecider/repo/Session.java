@@ -97,4 +97,17 @@ public class Session {
     public void setEndDatetime(LocalDateTime endDatetime) {
         this.endDatetime = endDatetime;
     }
+
+    @Override
+    public String toString() {
+        return "Session{" +
+                "id=" + id +
+                ", uuid=" + uuid +
+                ", name='" + name + '\'' +
+                ", status=" + status +
+                ", admin=" + admin +
+                ", createDatetime=" + createDatetime +
+                ", endDatetime=" + endDatetime +
+                '}';
+    }
 }

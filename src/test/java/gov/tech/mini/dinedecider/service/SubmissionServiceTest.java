@@ -1,6 +1,7 @@
 package gov.tech.mini.dinedecider.service;
 
-import gov.tech.mini.dinedecider.domain.SubmissionDto;
+import gov.tech.mini.dinedecider.domain.SubmissionRequestDto;
+import gov.tech.mini.dinedecider.domain.UserUuidDto;
 import gov.tech.mini.dinedecider.domain.exception.ApiException;
 import gov.tech.mini.dinedecider.domain.exception.ErrorCode;
 import gov.tech.mini.dinedecider.repo.*;
@@ -47,31 +48,38 @@ public class SubmissionServiceTest {
 
     @Test
     public void testGetSubmittedPlacesEmptySubmission () {
+        when(sessionUserRepository.findByStatusAndAttendee_UuidAndSession_Uuid(MemberStatus.JOINED, user.getUuid(), sessionUuid))
+                .thenReturn(Optional.of(submission.getSessionUser()));
         when(submissionRepository.findBySessionUser_Session_Uuid(sessionUuid)).thenReturn(Optional.empty());
-        var result = submissionService.getSubmittedPlaces(sessionUuid);
+        var result = submissionService.getSubmittedPlaces(sessionUuid, user.getUuid());
         assertTrue(result.isEmpty());
     }
 
     @Test
     public void testGetSubmittedPlaces () {
+        when(sessionUserRepository.findByStatusAndAttendee_UuidAndSession_Uuid(MemberStatus.JOINED, user.getUuid(), sessionUuid))
+                .thenReturn(Optional.of(submission.getSessionUser()));
         List<Submission> submissions = List.of(submission);
-
         when(submissionRepository.findBySessionUser_Session_Uuid(sessionUuid)).thenReturn(Optional.of(submissions));
-        var result = submissionService.getSubmittedPlaces(sessionUuid);
+        var result = submissionService.getSubmittedPlaces(sessionUuid, user.getUuid());
         assertEquals(1, result.size());
     }
 
     @Test
     public void testGetSelectedPlaceEmptySubmission () {
+        when(sessionUserRepository.findByStatusAndAttendee_UuidAndSession_Uuid(MemberStatus.JOINED, user.getUuid(), sessionUuid))
+                .thenReturn(Optional.of(submission.getSessionUser()));
         when(submissionRepository.findBySelectedAndSessionUser_Session_Uuid(true, sessionUuid)).thenReturn(Optional.empty());
-        var result = submissionService.getSelectedPlace(sessionUuid);
+        var result = submissionService.getSelectedPlace(sessionUuid, user.getUuid());
         assertNull(result);
     }
 
     @Test
     public void testGetSelectedPlace () {
+        when(sessionUserRepository.findByStatusAndAttendee_UuidAndSession_Uuid(MemberStatus.JOINED, user.getUuid(), sessionUuid))
+                .thenReturn(Optional.of(submission.getSessionUser()));
         when(submissionRepository.findBySelectedAndSessionUser_Session_Uuid(true, sessionUuid)).thenReturn(Optional.of(submission));
-        var result = submissionService.getSelectedPlace(sessionUuid);
+        var result = submissionService.getSelectedPlace(sessionUuid, user.getUuid());
         assertEquals("Place", result.placeName());
     }
 
@@ -79,7 +87,8 @@ public class SubmissionServiceTest {
     public void testSubmitPlaceInvalidSession () {
         when(sessionUserRepository.findByStatusAndAttendee_UuidAndSession_UuidAndSession_Status(MemberStatus.JOINED, user.getUuid(), sessionUuid, SessionStatus.ACTIVE))
                 .thenReturn(Optional.empty());
-        var thrown = assertThrows(ApiException.class, () -> submissionService.submitPlace(sessionUuid, new SubmissionDto(submission)));
+        var thrown = assertThrows(ApiException.class, () ->
+                submissionService.submitPlace(sessionUuid, new SubmissionRequestDto(submission.getPlaceName(), new UserUuidDto(user.getUuid()))));
         assertEquals(ErrorCode.INVALID_SUBMISSION, thrown.getErrorCode());
     }
 
@@ -89,7 +98,7 @@ public class SubmissionServiceTest {
                 .thenReturn(Optional.of(submission.getSessionUser()));
         when(submissionRepository.save(any(Submission.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        submissionService.submitPlace(sessionUuid, new SubmissionDto(submission));
+        submissionService.submitPlace(sessionUuid, new SubmissionRequestDto(submission.getPlaceName(), new UserUuidDto(user.getUuid())));
         verify(submissionRepository).save(any(Submission.class));
     }
 }

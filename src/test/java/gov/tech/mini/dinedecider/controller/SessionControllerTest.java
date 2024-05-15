@@ -1,9 +1,7 @@
 package gov.tech.mini.dinedecider.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import gov.tech.mini.dinedecider.domain.SessionDto;
-import gov.tech.mini.dinedecider.domain.SubmissionDto;
-import gov.tech.mini.dinedecider.domain.UserDto;
+import gov.tech.mini.dinedecider.domain.*;
 import gov.tech.mini.dinedecider.domain.exception.ApiException;
 import gov.tech.mini.dinedecider.domain.exception.ErrorCode;
 import gov.tech.mini.dinedecider.repo.User;
@@ -61,7 +59,7 @@ public class SessionControllerTest {
 
     @Test
     public void testStartSessionSuccess() throws Exception {
-        when(sessionService.startSession(any(SessionDto.class))).thenReturn(sessionDto);
+        when(sessionService.startSession(any(SessionStartRequestDto.class))).thenReturn(sessionDto);
 
         // Act & Assert
         mockMvc.perform(post("/sessions")
@@ -78,7 +76,7 @@ public class SessionControllerTest {
 
         mockMvc.perform(patch("/sessions/{sessionUuid}", sessionUuid)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(new UserDto(adminUser))))
+                        .content(objectMapper.writeValueAsString(new AdminUuidDto(adminUuid))))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.errCode").value(ErrorCode.SESSION_NOT_FOUND.name()));
     }
@@ -90,7 +88,7 @@ public class SessionControllerTest {
 
         mockMvc.perform(patch("/sessions/{sessionUuid}", sessionUuid)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(new UserDto(adminUser))))
+                        .content(objectMapper.writeValueAsString(new AdminUuidDto(adminUuid))))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.selected").exists());
     }

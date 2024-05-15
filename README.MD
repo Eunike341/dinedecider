@@ -2,6 +2,45 @@
 
 DineDecider is a new application for teams to collectively decide on a location to head to for lunch.
 
+## Use Case Diagram
+
+![Use Case Diagram](src/main/resources/static/images/use-case-diagram.png)
+
+### Description
+
+The use case diagram illustrates the interactions between the users and the system. The key use cases include:
+
+- **Start Session**: A user can start a new session to decide on a lunch location. The user becomes the admin of that session.
+- **Invite User**: More users can be invited to a session that is not yet ended.
+- **Submit Place**: Users can submit their preferred lunch places.
+- **View Submitted Places**: Users are able to see restaurants that others have submitted.
+- **View Selected Place**: Users are able to see the restaurant that is ultimately selected.
+- **End Session**: The admin can end the session and announce the selected place. Place is selected randomly.
+
+## Domain Diagram
+
+![Domain Diagram](src/main/resources/static/images/domain-diagram.png)
+
+### Description
+
+The domain diagram represents the key entities and their relationships within the system. The main entities include:
+
+- **User**: Represents a user in the system with attributes such as `id`, `name`, and `uuid`.
+- **Session**: Represents a session where users can submit and vote on lunch places. Attributes include `id`, `admin`, `status`, and `uuid`.
+- **SessionUser**: Represents normalization of the many-to-many relationship between User and Session. Attributes include `id`, `userId`, and `sessionId`.
+- **Submission**: Represents a lunch place submitted by users. Attributes include `id`, `placeName`, and whether it is ultimately `selected`.
+
+## API Documentation
+
+The API documentation for this project is available in the OpenAPI/Swagger format.
+
+### OpenAPI/Swagger Specification
+
+- [Download YAML format](src/main/resources/static/docs/api-docs.yaml)
+
+
+# Installation
+
 ## Requirements
 
 The project requires [Java 21].
@@ -22,15 +61,16 @@ $ mvn clean install
 
 ### Run the tests
 
-- Run unit tests
+Run unit tests
 
-  ```console
-  $ mvn test
-  ```
+```console
+$ mvn test
+```
 
-The project makes use of Docker and Docker Compose. The files are located under `docker` folder and the commands listed are to be run from said folder.
 
 ## Useful Docker commands
+
+The project makes use of Docker and Docker Compose. The files are located under `docker` folder and the commands listed are to be run from said folder.
 
 ### Build application image
 
@@ -70,74 +110,11 @@ $ psql --username dineuser --dbname dinedb
 $ \dt
 ```
 
-## API
+## API with Swagger UI
 
-### Start Dining Session
+Swagger UI is configured on the project.
 
-Endpoint
-
-```text
-POST /sessions
+### Swagger UI URL
+```html
+http://localhost:8080/swagger-ui/index.html
 ```
-
-Example of body
-
-```json
-{
-  "admin": {
-    "userUuid": <adminUuid>,
-    "name": <adminName>
-  },
-  "sessionName": <sessionName>,
-  "invitees": [
-    {
-      "userUuid": <userUuid>,
-      "name": <userName>
-    }
-  ]
-}
-```
-
-Parameters
-
-| Parameter     | Description                                                                                                                     |
-|---------------|---------------------------------------------------------------------------------------------------------------------------------|
-| `adminUuid`   | Unique Identifier of a user that starts the dining session. If this value does not exist in db, it will be added as new User.   |
-| `adminName`   | Name of the user that starts the dining session. If user already exists, this value is not going to update the existing record. |
-| `sessionName` | A name to the session                                                                                                           |
-| `invitees`     | This value can be set when starting a session, but more can be invited afterward                                                |
-|  `userUuid`   | Unique Identifier of a user who is invited to this session. If this value does not exist in db, it will be added as new User.   |
-| `userName`   | Name of the user who is invited to this session. If user already exists, this value is not going to update the existing record. |                                                                                                                                |
-
-Example response
-
-```json
-{
-    "sessionUuid": "b859ca90-c19e-4764-b065-7a369e6c0fa2",
-    "admin": {
-        "userUuid": "3195d230-1000-4c78-9b5d-800f6f1d098e",
-        "name": "Admin 2"
-    },
-    "sessionName": "Lunch 2",
-    "invitees": [
-        {
-            "userUuid": "4195d230-1000-4c78-9b5d-800f6f1d098e",
-            "name": "User 2"
-        }
-    ],
-    "attendees": null
-}
-```
-
-In the above example, a new session has been created with sessionUuid returned.
-
-The following POST request, is an example request using CURL, starts the dining session shown in the table above.
-
-```console
-$ curl \
-  -X POST \
-  -H "Content-Type: application/json" \
-  "http://localhost:8080/sessions" \
-  -d '{"admin": {"userUuid": "3195d230-1000-4c78-9b5d-800f6f1d098e", "name": "Admin 2" }, "sessionName": "Lunch 2", "invitees": [ { "userUuid": "4195d230-1000-4c78-9b5d-800f6f1d098e", "name": "User 2" } ]}'
-```
-

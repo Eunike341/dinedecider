@@ -1,0 +1,302 @@
+openapi: 3.0.1
+info:
+  title: OpenAPI definition
+  version: v0
+servers:
+- url: http://localhost:8080
+  description: Generated server url
+tags:
+- name: Submission Controller
+  description: APIs for handling and viewing submissions of places for a dining session
+    such as a team lunch
+- name: Session Controller
+  description: "APIs for managing dining sessions, such as team lunch session."
+paths:
+  /submissions/{sessionUuid}:
+    get:
+      tags:
+      - Submission Controller
+      summary: View submissions
+      description: Returns a list of submitted places for a given session UUID
+      operationId: viewSubmission
+      parameters:
+      - name: sessionUuid
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: userUuid
+        in: query
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        "200":
+          description: "List of submitted places retrieved successfully, or empty\
+            \ list when there is no submitted place yet."
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/SubmissionDto'
+        "403":
+          description: Only users who are in the session are able to see restaurants
+            that others have submitted
+    post:
+      tags:
+      - Submission Controller
+      summary: Submit a place
+      description: "Nominate a place for the team to go for lunch.The name of the\
+        \ place is free text to accommodate less formal place that is known within\
+        \ the team.Users are able to submit multiple times, and the same place can\
+        \ be submitted again."
+      operationId: submitPlace
+      parameters:
+      - name: sessionUuid
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubmissionRequestDto'
+        required: true
+      responses:
+        "400":
+          description: "Invalid submission could happen if the session has ended,\
+            \ or user has not joined, or not exist"
+        "204":
+          description: Place submitted successfully
+  /sessions:
+    post:
+      tags:
+      - Session Controller
+      summary: Start a new session
+      description: "Starts a new session with the provided details.If the admin's\
+        \ or invitee's UUID does not exist in the database, a new record will be inserted\
+        \ with the provided UUID and name. If the UUID already exists, no insert/\
+        \ update will be made, even if the name is different.The UUID is used as an\
+        \ identifier across different microservices as this application does not handle\
+        \ user management directly. It is expected to receive requests with new UUIDs\
+        \ and it provides a means to integrate back to the caller.Invitees is optional.\
+        \ New invites can be sent later with another API."
+      operationId: startSession
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SessionStartRequestDto'
+        required: true
+      responses:
+        "200":
+          description: Session started successfully
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/SessionDto'
+  /sessions/{sessionUuid}/invitations:
+    post:
+      tags:
+      - Session Controller
+      summary: Invite users to a session
+      description: Sends invitations to a list of users to join the session
+      operationId: inviteUser
+      parameters:
+      - name: sessionUuid
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/UserDto'
+        required: true
+      responses:
+        "204":
+          description: Users invited successfully
+        "404":
+          description: Session not found
+  /sessions/{sessionUuid}:
+    patch:
+      tags:
+      - Session Controller
+      summary: Decide on a place and end the session.
+      description: Ends an existing session identified by the session UUID.A session
+        can only be ended by the same user who started it and it has at least one
+        place recommendation submitted.The decider implementation is RandomPlaceDecider
+        which picks at a random index of the list of submitted places.
+      operationId: endSession
+      parameters:
+      - name: sessionUuid
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdminUuidDto'
+        required: true
+      responses:
+        "404":
+          description: Session or Admin User not found
+        "403":
+          description: Admin UUID is not the same user who created the session
+        "200":
+          description: Session ended successfully
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/SubmissionDto'
+        "400":
+          description: Session has ended or there is no place submitted to be selected
+  /sessions/{sessionUuid}/participants/{userUuid}:
+    patch:
+      tags:
+      - Session Controller
+      summary: Join a session
+      description: Allows an invited user to accept the invitation to join a session
+      operationId: joinSession
+      parameters:
+      - name: sessionUuid
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: userUuid
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        "400":
+          description: "Invalid attempt to join, could be because the user has joined\
+            \ before, is not invited, does not exist, or the session has ended or\
+            \ does not exist"
+        "204":
+          description: User joined the session successfully
+  /submissions/{sessionUuid}/selected:
+    get:
+      tags:
+      - Submission Controller
+      summary: View selected place
+      description: Returns the selected place for a given session UUID
+      operationId: viewSelectedPlace
+      parameters:
+      - name: sessionUuid
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: userUuid
+        in: query
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        "200":
+          description: "Selected place retrieved successfully, or empty response when\
+            \ there is no selected place yet."
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/SubmissionDto'
+        "403":
+          description: Only users who are in the session are able to see able to see
+            the picked restaurant.
+components:
+  schemas:
+    SubmissionRequestDto:
+      required:
+      - placeName
+      - submittedBy
+      type: object
+      properties:
+        placeName:
+          type: string
+        submittedBy:
+          $ref: '#/components/schemas/UserUuidDto'
+    UserUuidDto:
+      required:
+      - userUuid
+      type: object
+      properties:
+        userUuid:
+          type: string
+          format: uuid
+    SessionStartRequestDto:
+      required:
+      - admin
+      - sessionName
+      type: object
+      properties:
+        admin:
+          $ref: '#/components/schemas/UserDto'
+        sessionName:
+          type: string
+        invitees:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserDto'
+    UserDto:
+      required:
+      - userUuid
+      type: object
+      properties:
+        userUuid:
+          type: string
+          format: uuid
+        name:
+          type: string
+    SessionDto:
+      required:
+      - admin
+      - sessionName
+      type: object
+      properties:
+        sessionUuid:
+          type: string
+          format: uuid
+        admin:
+          $ref: '#/components/schemas/UserDto'
+        sessionName:
+          type: string
+        invitees:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserDto'
+    AdminUuidDto:
+      required:
+      - adminUuid
+      type: object
+      properties:
+        adminUuid:
+          type: string
+          format: uuid
+    SubmissionDto:
+      required:
+      - placeName
+      - submittedBy
+      type: object
+      properties:
+        placeName:
+          type: string
+        submittedBy:
+          $ref: '#/components/schemas/UserDto'
+        selected:
+          type: boolean
