@@ -32,7 +32,9 @@ The domain diagram represents the key entities and their relationships within th
 
 ## API Documentation
 
-The API documentation for this project is available in the OpenAPI/Swagger format.
+There are seven APIs, the start and end would be from SessionController,
+`POST /sessions` and `PATCH /sessions/{sessionUuid}` which are to start and end a session respectively.
+The full API documentation for this project is available in the OpenAPI/Swagger format.
 
 ### OpenAPI/Swagger Specification
 
